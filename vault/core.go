@@ -1826,10 +1826,6 @@ func (c *Core) unsealInternal(ctx context.Context, masterKey []byte) error {
 		c.logger.Info("vault is unsealed")
 	}
 
-	if err := c.storeLastUnsealed(ctx, version.Version); err != nil {
-		return err
-	}
-
 	if c.serviceRegistration != nil {
 		if err := c.serviceRegistration.NotifySealedStateChange(false); err != nil {
 			if c.logger.IsWarn() {
@@ -2242,6 +2238,9 @@ func (s standardUnsealStrategy) unseal(ctx context.Context, logger log.Logger, c
 		return err
 	}
 	if err := c.setupHeaderHMACKey(ctx, false); err != nil {
+		return err
+	}
+	if err := c.storeLastUpgrade(ctx, version.Version); err != nil {
 		return err
 	}
 
